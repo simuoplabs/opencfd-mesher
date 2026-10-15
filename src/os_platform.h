@@ -12,8 +12,6 @@
 #endif
 
 #if defined(__APPLE__)
-    #include <mach/mach.h>
-    #include <malloc/malloc.h>
     #include <sys/mman.h>
     #include <sys/stat.h>
     #include <sys/sysctl.h>

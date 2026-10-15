@@ -15,8 +15,6 @@
 #include <gmsh.h>
 
 // macOS Native Kernel & Virtual Memory Headers (RAM Telemetry + mmap Disk Cache)
-#include <mach/mach.h>
-#include <malloc/malloc.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
