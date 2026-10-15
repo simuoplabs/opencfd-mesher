@@ -45,10 +45,15 @@ jobs:
           - arch_label: Windows-x86_64
             cmake_arch: x64
           - arch_label: Windows-arm64
-            cmake_arch: ARM64
+            cmake_arch: amd64_arm64
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.cmake_arch }}
 
       - name: Setup Conda (Qt6 & VTK)
         uses: conda-incubator/setup-miniconda@v3
@@ -59,7 +64,7 @@ jobs:
 
       - name: Install Qt6 and VTK
         shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake qt6-main vtk nsis
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk nsis
 
       - name: Download Official Gmsh Windows SDK
         shell: pwsh
@@ -67,17 +72,17 @@ jobs:
           Invoke-WebRequest -Uri "https://gmsh.info/bin/Windows/gmsh-4.15.2-Windows64-sdk.zip" -OutFile "gmsh-sdk.zip"
           Expand-Archive -Path "gmsh-sdk.zip" -DestinationPath "C:/gmsh-sdk"
 
-      - name: Build Windows Package (Visual Studio MSVC)
+      - name: Build Windows Package (Ninja + MSVC)
         shell: bash -el {0}
         run: |
-          cmake -B build -G "Visual Studio 17 2022" -A ${{ matrix.cmake_arch }} -DCMAKE_BUILD_TYPE=Release \
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library;C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk" \
             -DGMSH_INCLUDE_DIR="C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/include" \
             -DGMSH_LIBRARY="C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.lib"
-          cmake --build build --config Release
-          mkdir -p build/bin/Release
-          cp C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.dll build/bin/Release/ 2>/dev/null || cp C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.dll build/Release/ || true
-          cd build && cpack -C Release -G ZIP
+          cmake --build build
+          cp C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.dll build/bin/ 2>/dev/null || cp C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.dll build/ || true
+          windeployqt build/OpenCFDMesher.exe || true
+          cd build && cpack -G ZIP
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
