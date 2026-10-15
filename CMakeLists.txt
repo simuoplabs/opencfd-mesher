@@ -19,15 +19,17 @@ if(APPLE)
     list(PREPEND CMAKE_PREFIX_PATH "${HB_PREFIX}" "/opt/homebrew" "/usr/local")
     list(APPEND CMAKE_IGNORE_PREFIX_PATH "/opt/anaconda3")
 elseif(WIN32)
-    list(APPEND CMAKE_PREFIX_PATH "C:/gmsh-sdk" "$ENV{CONDA_PREFIX}/Library")
+    string(REPLACE "\\" "/" CONDA_PREFIX_PATH "$ENV{CONDA_PREFIX}")
+    list(APPEND CMAKE_PREFIX_PATH "C:/gmsh-sdk" "${CONDA_PREFIX_PATH}/Library")
 endif()
 
 find_path(GMSH_INCLUDE_DIR gmsh.h
     HINTS /opt/homebrew/include /usr/local/include /usr/include "${HB_PREFIX}/include" "C:/gmsh-sdk/include" "$ENV{CONDA_PREFIX}/Library/include"
     REQUIRED
 )
-find_library(GMSH_LIBRARY NAMES gmsh libgmsh
-    HINTS /opt/homebrew/lib /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu "${HB_PREFIX}/lib" "C:/gmsh-sdk/lib" "$ENV{CONDA_PREFIX}/Library/lib"
+
+find_library(GMSH_LIBRARY NAMES gmsh libgmsh gmsh-4 gmsh4
+    HINTS /opt/homebrew/lib /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu "${HB_PREFIX}/lib" "C:/gmsh-sdk/lib" "$ENV{CONDA_PREFIX}/Library/lib" "$ENV{CONDA_PREFIX}/libs"
     REQUIRED
 )
 
@@ -99,7 +101,6 @@ if(APPLE)
     set(MACDEPLOYQT_PATH "${QT_PREFIX}/bin/macdeployqt")
 
     install(CODE "
-        message(STATUS \"Running macdeployqt from ${MAC_DEPLOYQT_PATH}...\")
         execute_process(COMMAND \"${MACDEPLOYQT_PATH}\" \"\${CMAKE_INSTALL_PREFIX}/OpenCFDMesher.app\" -always-overwrite)
         execute_process(COMMAND codesign --force --deep -s - \"\${CMAKE_INSTALL_PREFIX}/OpenCFDMesher.app\")
     ")
