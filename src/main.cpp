@@ -114,11 +114,13 @@ public:
     double cachedDiskMB = 0.0;
     bool hasDiskCache = false;
 
-    OutOfCoreMeshCache(const std::string& dir = "/tmp/simuop_cfd_cache") : cacheDir(dir) {
-        mkdir(cacheDir.c_str(), 0755);
-        nodesPath    = cacheDir + "/nodes.bin";
-        tetsPath     = cacheDir + "/tets.bin";
-        mshCachePath = cacheDir + "/full_volume_cache.msh";
+    OutOfCoreMeshCache() {
+        QString qDir = QDir::tempPath() + "/simuop_cfd_cache";
+        QDir().mkpath(qDir);
+        cacheDir     = qDir.toStdString();
+        nodesPath    = (qDir + "/nodes.bin").toStdString();
+        tetsPath     = (qDir + "/tets.bin").toStdString();
+        mshCachePath = (qDir + "/full_volume_cache.msh").toStdString();
     }
 
     ~OutOfCoreMeshCache() {
@@ -126,27 +128,18 @@ public:
     }
 
     static double getCurrentRamUsageMB() {
-        task_vm_info_data_t vmInfo;
-        mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
-        if (task_info(mach_task_self(), TASK_VM_INFO, (task_info_t)&vmInfo, &count) == KERN_SUCCESS) {
-            return static_cast<double>(vmInfo.phys_footprint) / (1024.0 * 1024.0);
-        }
-        return 0.0;
+        return SimuopOS::getCurrentRamUsageMB();
     }
 
     static void releaseFreeRamToMacOS() {
-        malloc_zone_pressure_relief(nullptr, 0);
+        SimuopOS::releaseFreeRamToOS();
     }
 
     static double getFileSizeMB(const std::string& path) {
-        struct stat st;
-        if (stat(path.c_str(), &st) == 0) {
-            return static_cast<double>(st.st_size) / (1024.0 * 1024.0);
-        }
-        return 0.0;
+        QFileInfo fi(QString::fromStdString(path));
+        return fi.exists() ? (static_cast<double>(fi.size()) / (1024.0 * 1024.0)) : 0.0;
     }
 
-    // Supports both 1st-order Tet4 (type 4) and 2nd-order Quadratic Tet10 (type 11) for FVM & FEM!
     bool offload3DMeshToDiskAndFreeRAM(bool saveMshBackup = true) {
         hasDiskCache = false;
         numCachedNodes = 0;
@@ -212,8 +205,6 @@ public:
             tetChunk.reserve(65536);
 
             for (size_t t = 0; t < eTypes3D.size(); ++t) {
-                // Element Type 4 = 4-node Linear Tet4 (FVM/FEM)
-                // Element Type 11 = 10-node Quadratic Tet10 (FEM High-Order) -> first 4 nodes are the 4 corner vertices!
                 int nodesPerElem = (eTypes3D[t] == 4) ? 4 : ((eTypes3D[t] == 11) ? 10 : 0);
                 if (nodesPerElem > 0) {
                     const auto& ns = eNodes3D[t];
@@ -259,30 +250,13 @@ public:
         auto sliceGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
         if (!hasDiskCache || numCachedNodes == 0 || numCachedTets == 0 || !plane) return sliceGrid;
 
-        int fdNodes = open(nodesPath.c_str(), O_RDONLY);
-        int fdTets  = open(tetsPath.c_str(), O_RDONLY);
-        if (fdNodes < 0 || fdTets < 0) {
-            if (fdNodes >= 0) close(fdNodes);
-            if (fdTets >= 0) close(fdTets);
+        SimuopOS::MappedFileReader nodesMap, tetsMap;
+        if (!nodesMap.openAndMap(nodesPath, numCachedNodes * sizeof(CachedNode)) ||
+            !tetsMap.openAndMap(tetsPath, numCachedTets * sizeof(CachedTet))) {
             return sliceGrid;
         }
-
-        size_t nodesBytes = numCachedNodes * sizeof(CachedNode);
-        size_t tetsBytes  = numCachedTets  * sizeof(CachedTet);
-
-        const CachedNode* mmapNodes = reinterpret_cast<const CachedNode*>(
-            mmap(nullptr, nodesBytes, PROT_READ, MAP_SHARED, fdNodes, 0));
-        const CachedTet* mmapTets = reinterpret_cast<const CachedTet*>(
-            mmap(nullptr, tetsBytes, PROT_READ, MAP_SHARED, fdTets, 0));
-
-        if (mmapNodes == MAP_FAILED || mmapTets == MAP_FAILED) {
-            if (mmapNodes != MAP_FAILED) munmap((void*)mmapNodes, nodesBytes);
-            if (mmapTets != MAP_FAILED)  munmap((void*)mmapTets, tetsBytes);
-            close(fdNodes); close(fdTets);
-            return sliceGrid;
-        }
-
-        madvise((void*)mmapTets, tetsBytes, MADV_SEQUENTIAL);
+        const CachedNode* mmapNodes = reinterpret_cast<const CachedNode*>(nodesMap.data);
+        const CachedTet*  mmapTets  = reinterpret_cast<const CachedTet*>(tetsMap.data);
 
         double origin[3], normal[3];
         plane->GetOrigin(origin);
@@ -323,20 +297,13 @@ public:
         }
 
         sliceGrid->SetPoints(slicePts);
-
-        madvise((void*)mmapTets, tetsBytes, MADV_FREE_REUSABLE);
-        munmap((void*)mmapNodes, nodesBytes);
-        munmap((void*)mmapTets, tetsBytes);
-        close(fdNodes);
-        close(fdTets);
-
         return sliceGrid;
     }
 
     void clearDiskCache() {
-        unlink(nodesPath.c_str());
-        unlink(tetsPath.c_str());
-        unlink(mshCachePath.c_str());
+        QFile::remove(QString::fromStdString(nodesPath));
+        QFile::remove(QString::fromStdString(tetsPath));
+        QFile::remove(QString::fromStdString(mshCachePath));
         hasDiskCache = false;
         numCachedNodes = 0;
         numCachedTets = 0;
@@ -345,9 +312,6 @@ public:
     }
 };
 
-// ============================================================================
-// DATA STRUCTURES & CUSTOM INTERACTOR
-// ============================================================================
 struct RefinementStroke {
     double x, y, z;
     double radius;
