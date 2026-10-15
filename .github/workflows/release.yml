@@ -55,32 +55,23 @@ jobs:
         with:
           arch: ${{ matrix.cmake_arch }}
 
-      - name: Setup Conda (Qt6 & VTK)
+      - name: Setup Conda (Qt6, VTK & Gmsh)
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           channels: conda-forge
           channel-priority: strict
 
-      - name: Install Qt6 and VTK
+      - name: Install Qt6, VTK, Gmsh and NSIS
         shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake ninja qt6-main vtk nsis
-
-      - name: Download Official Gmsh Windows SDK
-        shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri "https://gmsh.info/bin/Windows/gmsh-4.15.2-Windows64-sdk.zip" -OutFile "gmsh-sdk.zip"
-          Expand-Archive -Path "gmsh-sdk.zip" -DestinationPath "C:/gmsh-sdk"
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
 
       - name: Build Windows Package (Ninja + MSVC)
         shell: bash -el {0}
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library;C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk" \
-            -DGMSH_INCLUDE_DIR="C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/include" \
-            -DGMSH_LIBRARY="C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.lib"
+            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library"
           cmake --build build
-          cp C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.dll build/bin/ 2>/dev/null || cp C:/gmsh-sdk/gmsh-4.15.2-Windows64-sdk/lib/gmsh.dll build/ || true
           windeployqt build/OpenCFDMesher.exe || true
           cd build && cpack -G ZIP
 
