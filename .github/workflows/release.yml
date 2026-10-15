@@ -37,29 +37,21 @@ jobs:
           name: pkg-${{ matrix.label }}
           path: build/*.dmg
 
-  windows-zip-matrix:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch_label: Windows-x86_64
-            cmake_arch: x64
-          - arch_label: Windows-arm64
-            cmake_arch: amd64_arm64
+  windows-zip:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - name: Setup MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: ${{ matrix.cmake_arch }}
-      - name: Setup Conda (Qt6, VTK & Gmsh)
+          arch: x64
+      - name: Setup Conda (Qt6 & VTK)
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           channels: conda-forge
           channel-priority: strict
-      - name: Install Qt6, VTK, Gmsh and NSIS
+      - name: Install Qt6, VTK and Gmsh (x64)
         shell: bash -el {0}
         run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
       - name: Build Windows Package
@@ -73,37 +65,31 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pkg-${{ matrix.arch_label }}
+          name: pkg-Windows-x86_64
           path: build/*.zip
 
   linux-deb-x86_64:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Conda on Linux (Guarantees Qt6 & VTK9 matching)
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          auto-activate-base: true
-          channels: conda-forge
-          channel-priority: strict
-      - name: Install Linux Conda Dependencies
-        shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh dpkg
-      - name: Build Linux .deb
-        shell: bash -el {0}
+      - name: Install Native APT Dependencies & dpkg
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library"
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build dpkg-dev \
+            qt6-base-dev libqt6opengl6-dev libvtk9-dev libvtk9-qt-dev libgmsh-dev gmsh libgl1-mesa-dev
+      - name: Build Linux .deb Natively via APT
+        run: |
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
           cmake --build build
           cd build && cpack -G DEB
-      - name: Upload Artifact
+      - name: Upload Linux .deb Artifact
         uses: actions/upload-artifact@v4
         with:
           name: pkg-Linux-x86_64
           path: build/*.deb
 
   publish-github-release:
-    needs: [macos-dmg-matrix, windows-zip-matrix, linux-deb-x86_64]
+    needs: [macos-dmg-matrix, windows-zip, linux-deb-x86_64]
     if: always() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
