@@ -12,17 +12,13 @@
 #endif
 
 #if defined(__APPLE__)
-    #if !defined(_WIN32)
-#include <sys/mman.h>
-#endif
+    #include <mach/mach.h>
+    #include <malloc/malloc.h>
+    #include <sys/mman.h>
     #include <sys/stat.h>
     #include <sys/sysctl.h>
-    #if !defined(_WIN32)
-#include <fcntl.h>
-#endif
-    #if !defined(_WIN32)
-#include <unistd.h>
-#endif
+    #include <fcntl.h>
+    #include <unistd.h>
 #elif defined(_WIN32)
     #ifndef NOMINMAX
     #define NOMINMAX
@@ -36,27 +32,16 @@
     #endif
 #elif defined(__linux__)
     #include <malloc.h>
-    #if !defined(_WIN32)
-#include <sys/mman.h>
-#endif
+    #include <sys/mman.h>
     #include <sys/stat.h>
-    #if !defined(_WIN32)
-#include <fcntl.h>
-#endif
-    #if !defined(_WIN32)
-#include <unistd.h>
-#endif
+    #include <fcntl.h>
+    #include <unistd.h>
     #include <fstream>
     #if defined(__x86_64__) || defined(__i386__)
         #include <cpuid.h>
     #endif
 #endif
 
-// ============================================================================
-// MULTI-VENDOR GPU DRIVER HOOKS (NVIDIA OPTIMUS & AMD RADEON SMARTSHIFT)
-// Forces Windows & Linux dual-GPU systems to select the dedicated NVIDIA/AMD GPU
-// instead of throttling on low-power integrated graphics.
-// ============================================================================
 #if defined(_WIN32)
 extern "C" {
     __declspec(dllexport) unsigned long NvOptimusEnablement = 0x00000001;
@@ -71,13 +56,12 @@ extern "C" {
 
 namespace SimuopOS {
 
-    // 1. Detect Exact CPU Architecture & Vendor (AMD Ryzen, Intel Core/Xeon, or ARM64)
     inline std::string getCpuArchitectureAndBrand() {
         std::string arch =
         #if defined(__aarch64__) || defined(_M_ARM64)
             "ARM64";
         #elif defined(__x86_64__) || defined(_M_X64)
-            "x86_64 (Intel / AMD Ryzen)";
+            "x86_64";
         #else
             "Generic-64";
         #endif
@@ -88,63 +72,20 @@ namespace SimuopOS {
             if (sysctlbyname("machdep.cpu.brand_string", &brand, &size, nullptr, 0) == 0 && brand[0] != '\0') {
                 return std::string(brand) + " [" + arch + "]";
             }
-        #elif (defined(_WIN32) || defined(__linux__)) && (defined(__x86_64__) || defined(_M_X64))
-            char brand[0x40] = {0};
-            #if defined(_WIN32)
-                int cpuInfo[4] = {-1};
-                __cpuid(cpuInfo, 0x80000000);
-                unsigned int nExIds = cpuInfo[0];
-                if (nExIds >= 0x80000004) {
-                    __cpuid((int*)(brand),      0x80000002);
-                    __cpuid((int*)(brand + 16), 0x80000003);
-                    __cpuid((int*)(brand + 32), 0x80000004);
-                    return std::string(brand) + " [" + arch + "]";
-                }
-            #elif defined(__linux__)
-                std::ifstream cpuinfo("/proc/cpuinfo");
-                std::string line;
-                while (std::getline(cpuinfo, line)) {
-                    if (line.find("model name") != std::string::npos) {
-                        size_t colon = line.find(':');
-                        if (colon != std::string::npos) {
-                            return line.substr(colon + 2) + " [" + arch + "]";
-                        }
-                    }
-                }
-            #endif
         #endif
         return arch;
     }
 
-    // 2. Configure Environment for Target GPU Vendor (NVIDIA / AMD / Intel / Software Fallback)
     inline void applyGpuVendorPreference(const std::string& gpuMode) {
         if (gpuMode == "software_cpu") {
             #if defined(_WIN32)
                 _putenv_s("QT_OPENGL", "software");
-                _putenv_s("GALLIUM_DRIVER", "llvmpipe");
             #else
                 setenv("LIBGL_ALWAYS_SOFTWARE", "1", 1);
-                setenv("GALLIUM_DRIVER", "llvmpipe", 1);
-            #endif
-        } else if (gpuMode == "nvidia") {
-            #if defined(__linux__)
-                // Enables NVIDIA PRIME Render Offload on Linux laptops (Intel/AMD iGPU + NVIDIA dGPU)
-                setenv("__NV_PRIME_RENDER_OFFLOAD", "1", 1);
-                setenv("__GLX_VENDOR_LIBRARY_NAME", "nvidia", 1);
-            #endif
-        } else if (gpuMode == "amd") {
-            #if defined(__linux__)
-                // Enables AMD Radeon discrete GPU offload via DRI_PRIME=1 on Linux
-                setenv("DRI_PRIME", "1", 1);
-            #endif
-        } else if (gpuMode == "intel") {
-            #if defined(__linux__)
-                setenv("DRI_PRIME", "0", 1);
             #endif
         }
     }
 
-    // 3. Cross-Platform Physical RAM Footprint (MB)
     inline double getCurrentRamUsageMB() {
     #if defined(__APPLE__)
         task_vm_info_data_t vmInfo;
@@ -172,7 +113,6 @@ namespace SimuopOS {
     #endif
     }
 
-    // 4. Cross-Platform Heap Reclamation
     inline void releaseFreeRamToOS() {
     #if defined(__APPLE__)
         malloc_zone_pressure_relief(nullptr, 0);
@@ -184,7 +124,6 @@ namespace SimuopOS {
     #endif
     }
 
-    // 5. Cross-Platform Read-Only Memory-Mapped File (POSIX mmap / Win32 MapViewOfFile)
     class MappedFileReader {
     public:
         const void* data = nullptr;
