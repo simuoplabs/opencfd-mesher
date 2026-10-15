@@ -18,103 +18,90 @@ jobs:
           - os: macos-14
             arch: arm64
             label: macOS-arm64
-          - os: macos-14
+          - os: macos-13
             arch: x86_64
             label: macOS-x86_64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Dependencies via Homebrew
+      - name: Install Homebrew Dependencies
         run: brew install cmake ninja qt vtk gmsh molten-vk
-
       - name: Build macOS .dmg (${{ matrix.label }})
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}"
           cmake --build build
           cd build && cpack -G DragNDrop
-
-      - name: Upload ${{ matrix.label }} .dmg
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: pkg-${{ matrix.label }}
           path: build/*.dmg
 
-  windows-exe-matrix:
+  windows-zip-matrix:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - arch_label: Windows-x86_64-Intel-Ryzen
-            cmake_arch: x86_64-Intel-Ryzen
+          - arch_label: Windows-x86_64
+            cmake_arch: x86_64
           - arch_label: Windows-arm64
             cmake_arch: arm64
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Conda-Forge C++ SDKs
+      - name: Setup Conda
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           channels: conda-forge
-          pkgs-dirs: ${{ runner.temp }}/conda_pkgs
-
-      - name: Install Qt6, VTK, Gmsh & NSIS
+          channel-priority: strict
+      - name: Install SDKs
         shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
-
-      - name: Build Windows .exe Setup Wizard (${{ matrix.arch_label }})
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh
+      - name: Build Windows Package
         shell: bash -el {0}
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library" \
-            -DPACKAGE_ARCH="${{ matrix.cmake_arch }}"
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library"
           cmake --build build
-          cd build && cpack -G NSIS
-
-      - name: Upload ${{ matrix.arch_label }} .exe
+          windeployqt build/OpenCFDMesher.exe || true
+          cd build && cpack -G ZIP
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: pkg-${{ matrix.arch_label }}
-          path: build/*.exe
+          path: build/*.zip
 
   linux-deb-x86_64:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install APT Build Dependencies
+      - name: Install APT Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential cmake ninja-build dpkg-dev \
-            qt6-base-dev libqt6opengl6-dev libvtk9-dev libvtk9-qt-dev libgmsh-dev gmsh \
-            libgl1-mesa-dev libegl1-mesa-dev
-
-      - name: Build Debian .deb Installer
+            qt6-base-dev libqt6opengl6-dev libvtk9-dev libvtk9-qt-dev libgmsh-dev gmsh libgl1-mesa-dev
+      - name: Build Linux .deb
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
           cmake --build build
           cd build && cpack -G DEB
-
-      - name: Upload Linux .deb
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pkg-Linux-x86_64-Intel-Ryzen
+          name: pkg-Linux-x86_64
           path: build/*.deb
 
   publish-github-release:
-    needs: [macos-dmg-matrix, windows-exe-matrix, linux-deb-x86_64]
+    needs: [macos-dmg-matrix, windows-zip-matrix, linux-deb-x86_64]
     if: always() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
-      - name: Download All Built Installers
+      - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
           path: release_assets
           merge-multiple: true
-
-      - name: Publish Installers to GitHub Releases
+      - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
@@ -122,5 +109,5 @@ jobs:
           generate_release_notes: true
           files: |
             release_assets/*.dmg
-            release_assets/*.exe
+            release_assets/*.zip
             release_assets/*.deb
