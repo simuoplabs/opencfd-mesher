@@ -1,4 +1,4 @@
-name: Build Installers (Windows .exe, macOS .dmg, Linux .deb)
+name: Build & Publish Release Installers
 
 on:
   push:
@@ -6,67 +6,80 @@ on:
     tags: [ 'v*' ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  # ===========================================================================
-  # 1. macOS (.dmg Drag-and-Drop Installer with all dylibs bundled)
-  # ===========================================================================
-  macos-dmg:
-    runs-on: macos-14
+  macos-dmg-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            arch: arm64
+            label: macOS-arm64
+          - os: macos-14
+            arch: x86_64
+            label: macOS-x86_64
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Dependencies via Homebrew
         run: brew install cmake ninja qt vtk gmsh molten-vk
 
-      - name: Compile & Build Self-Contained .dmg
+      - name: Build macOS .dmg (${{ matrix.label }})
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}"
           cmake --build build
           cd build && cpack -G DragNDrop
 
-      - name: Upload macOS .dmg Installer
+      - name: Upload ${{ matrix.label }} .dmg
         uses: actions/upload-artifact@v4
         with:
-          name: SimuopOpenCFDMesher-macOS-arm64-dmg
+          name: pkg-${{ matrix.label }}
           path: build/*.dmg
 
-  # ===========================================================================
-  # 2. Windows (.exe NSIS Setup Wizard with all DLLs bundled)
-  # ===========================================================================
-  windows-exe:
+  windows-exe-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch_label: Windows-x86_64-Intel-Ryzen
+            cmake_arch: x86_64-Intel-Ryzen
+          - arch_label: Windows-arm64
+            cmake_arch: arm64
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Conda-Forge C++ Environment
+      - name: Setup Conda-Forge C++ SDKs
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           channels: conda-forge
           pkgs-dirs: ${{ runner.temp }}/conda_pkgs
 
-      - name: Install Qt6, VTK, Gmsh & NSIS Installer Compiler
+      - name: Install Qt6, VTK, Gmsh & NSIS
         shell: bash -el {0}
-        run: |
-          conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
 
-      - name: Compile & Build Self-Contained Windows .exe Installer
+      - name: Build Windows .exe Setup Wizard (${{ matrix.arch_label }})
         shell: bash -el {0}
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library"
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library" \
+            -DPACKAGE_ARCH="${{ matrix.cmake_arch }}"
           cmake --build build
           cd build && cpack -G NSIS
 
-      - name: Upload Windows .exe Installer
+      - name: Upload ${{ matrix.arch_label }} .exe
         uses: actions/upload-artifact@v4
         with:
-          name: SimuopOpenCFDMesher-Windows-x64-exe
+          name: pkg-${{ matrix.arch_label }}
           path: build/*.exe
 
-  # ===========================================================================
-  # 3. Linux (.deb Package that auto-installs APT dependencies)
-  # ===========================================================================
-  linux-deb:
+  linux-deb-x86_64:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -75,16 +88,39 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential cmake ninja-build dpkg-dev \
-            qt6-base-dev libqt6opengl6-dev libvtk9-dev libvtk9-qt-dev libgmsh-dev gmsh
+            qt6-base-dev libqt6opengl6-dev libvtk9-dev libvtk9-qt-dev libgmsh-dev gmsh \
+            libgl1-mesa-dev libegl1-mesa-dev
 
-      - name: Compile & Build Debian .deb Installer
+      - name: Build Debian .deb Installer
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
           cmake --build build
           cd build && cpack -G DEB
 
-      - name: Upload Linux .deb Package
+      - name: Upload Linux .deb
         uses: actions/upload-artifact@v4
         with:
-          name: SimuopOpenCFDMesher-Linux-x64-deb
+          name: pkg-Linux-x86_64-Intel-Ryzen
           path: build/*.deb
+
+  publish-github-release:
+    needs: [macos-dmg-matrix, windows-exe-matrix, linux-deb-x86_64]
+    if: always() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Built Installers
+        uses: actions/download-artifact@v4
+        with:
+          path: release_assets
+          merge-multiple: true
+
+      - name: Publish Installers to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Simuop OpenCFD Studio ${{ github.ref_name }}"
+          generate_release_notes: true
+          files: |
+            release_assets/*.dmg
+            release_assets/*.exe
+            release_assets/*.deb

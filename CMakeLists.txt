@@ -169,4 +169,5 @@ elseif(UNIX)
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "gmsh")
 endif()
 
+set(CPACK_PACKAGE_FILE_NAME "SimuopOpenCFDMesher-${CPACK_SYSTEM_NAME}")
 include(CPack)
