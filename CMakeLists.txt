@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(OpenCFDMesher VERSION 1.0.0 LANGUAGES CXX)
+project(OpenCFDMesher VERSION 1.0.0 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -21,14 +21,17 @@ if(APPLE)
 elseif(WIN32)
     string(REPLACE "\\" "/" CONDA_PREFIX_PATH "$ENV{CONDA_PREFIX}")
     list(APPEND CMAKE_PREFIX_PATH "${CONDA_PREFIX_PATH}/Library")
+elseif(UNIX)
+    string(REPLACE "\\" "/" CONDA_PREFIX_PATH "$ENV{CONDA_PREFIX}")
+    list(APPEND CMAKE_PREFIX_PATH "${CONDA_PREFIX_PATH}")
 endif()
 
 find_path(GMSH_INCLUDE_DIR gmsh.h
-    HINTS /opt/homebrew/include /usr/local/include /usr/include "${HB_PREFIX}/include" "$ENV{CONDA_PREFIX}/Library/include"
+    HINTS /opt/homebrew/include /usr/local/include /usr/include "${HB_PREFIX}/include" "$ENV{CONDA_PREFIX}/Library/include" "$ENV{CONDA_PREFIX}/include"
     REQUIRED
 )
 find_library(GMSH_LIBRARY NAMES gmsh libgmsh gmsh-4 gmsh4
-    HINTS /opt/homebrew/lib /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu "${HB_PREFIX}/lib" "$ENV{CONDA_PREFIX}/Library/lib" "$ENV{CONDA_PREFIX}/libs"
+    HINTS /opt/homebrew/lib /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu "${HB_PREFIX}/lib" "$ENV{CONDA_PREFIX}/Library/lib" "$ENV{CONDA_PREFIX}/lib" "$ENV{CONDA_PREFIX}/libs"
     REQUIRED
 )
 
@@ -140,7 +143,7 @@ elseif(UNIX)
     set(CPACK_GENERATOR "DEB")
     set(CPACK_SYSTEM_NAME "Linux-x86_64")
     set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Simuop Labs <https://simuoplabs.github.io>")
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "gmsh, libgl1, libegl1, mesa-utils")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libgl1, libegl1, mesa-utils")
 endif()
 
 include(CPack)
