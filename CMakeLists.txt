@@ -20,20 +20,19 @@ if(APPLE)
     list(APPEND CMAKE_IGNORE_PREFIX_PATH "/opt/anaconda3")
 elseif(WIN32)
     string(REPLACE "\\" "/" CONDA_PREFIX_PATH "$ENV{CONDA_PREFIX}")
-    list(APPEND CMAKE_PREFIX_PATH "C:/gmsh-sdk" "${CONDA_PREFIX_PATH}/Library")
+    list(APPEND CMAKE_PREFIX_PATH "${CONDA_PREFIX_PATH}/Library")
 endif()
 
 find_path(GMSH_INCLUDE_DIR gmsh.h
-    HINTS /opt/homebrew/include /usr/local/include /usr/include "${HB_PREFIX}/include" "C:/gmsh-sdk/include" "$ENV{CONDA_PREFIX}/Library/include"
+    HINTS /opt/homebrew/include /usr/local/include /usr/include "${HB_PREFIX}/include" "$ENV{CONDA_PREFIX}/Library/include"
     REQUIRED
 )
-
 find_library(GMSH_LIBRARY NAMES gmsh libgmsh gmsh-4 gmsh4
-    HINTS /opt/homebrew/lib /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu "${HB_PREFIX}/lib" "C:/gmsh-sdk/lib" "$ENV{CONDA_PREFIX}/Library/lib" "$ENV{CONDA_PREFIX}/libs"
+    HINTS /opt/homebrew/lib /usr/local/lib /usr/lib /usr/lib/x86_64-linux-gnu "${HB_PREFIX}/lib" "$ENV{CONDA_PREFIX}/Library/lib" "$ENV{CONDA_PREFIX}/libs"
     REQUIRED
 )
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets OpenGLWidgets Gui)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGLWidgets)
 find_package(VTK REQUIRED COMPONENTS
     CommonCore
     CommonDataModel
@@ -52,7 +51,7 @@ find_package(VTK REQUIRED COMPONENTS
 )
 
 if(APPLE)
-    add_executable(OpenCFDMesher MACOSX_BUNDLE src/main.cpp)
+    add_executable(OpenCFDMesher MACOSX_BUNDLE src/main.cpp src/os_platform.h)
     set_target_properties(OpenCFDMesher PROPERTIES
         MACOSX_BUNDLE_GUI_IDENTIFIER "io.github.simuoplabs.opencfdmesher"
         MACOSX_BUNDLE_BUNDLE_NAME "OpenCFDMesher"
@@ -62,22 +61,25 @@ if(APPLE)
         BUILD_WITH_INSTALL_RPATH TRUE
     )
 elseif(WIN32)
-    add_executable(OpenCFDMesher WIN32 src/main.cpp)
+    add_executable(OpenCFDMesher WIN32 src/main.cpp src/os_platform.h)
+    target_compile_definitions(OpenCFDMesher PRIVATE QT_DLL NOMINMAX _USE_MATH_DEFINES)
 else()
-    add_executable(OpenCFDMesher src/main.cpp)
+    add_executable(OpenCFDMesher src/main.cpp src/os_platform.h)
 endif()
 
 target_include_directories(OpenCFDMesher PRIVATE ${GMSH_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 target_link_libraries(OpenCFDMesher PRIVATE
     ${GMSH_LIBRARY}
     Qt6::Widgets
-    Qt6::OpenGLWidgets
     Qt6::Gui
+    Qt6::OpenGLWidgets
+    Qt6::Core
     ${VTK_LIBRARIES}
 )
 
 if(WIN32)
-    target_link_libraries(OpenCFDMesher PRIVATE psapi opengl32)
+    target_link_libraries(OpenCFDMesher PRIVATE psapi opengl32 shell32 user32)
 endif()
 
 vtk_module_autoinit(
