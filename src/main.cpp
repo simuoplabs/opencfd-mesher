@@ -15,10 +15,16 @@
 #include <gmsh.h>
 
 // macOS Native Kernel & Virtual Memory Headers (RAM Telemetry + mmap Disk Cache)
+#if !defined(_WIN32)
 #include <sys/mman.h>
+#endif
 #include <sys/stat.h>
+#if !defined(_WIN32)
 #include <fcntl.h>
+#endif
+#if !defined(_WIN32)
 #include <unistd.h>
+#endif
 
 // Qt6 Includes
 #include <QApplication>

@@ -12,11 +12,17 @@
 #endif
 
 #if defined(__APPLE__)
-    #include <sys/mman.h>
+    #if !defined(_WIN32)
+#include <sys/mman.h>
+#endif
     #include <sys/stat.h>
     #include <sys/sysctl.h>
-    #include <fcntl.h>
-    #include <unistd.h>
+    #if !defined(_WIN32)
+#include <fcntl.h>
+#endif
+    #if !defined(_WIN32)
+#include <unistd.h>
+#endif
 #elif defined(_WIN32)
     #ifndef NOMINMAX
     #define NOMINMAX
@@ -30,10 +36,16 @@
     #endif
 #elif defined(__linux__)
     #include <malloc.h>
-    #include <sys/mman.h>
+    #if !defined(_WIN32)
+#include <sys/mman.h>
+#endif
     #include <sys/stat.h>
-    #include <fcntl.h>
-    #include <unistd.h>
+    #if !defined(_WIN32)
+#include <fcntl.h>
+#endif
+    #if !defined(_WIN32)
+#include <unistd.h>
+#endif
     #include <fstream>
     #if defined(__x86_64__) || defined(__i386__)
         #include <cpuid.h>
