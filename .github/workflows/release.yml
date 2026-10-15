@@ -1,0 +1,90 @@
+name: Build Installers (Windows .exe, macOS .dmg, Linux .deb)
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+jobs:
+  # ===========================================================================
+  # 1. macOS (.dmg Drag-and-Drop Installer with all dylibs bundled)
+  # ===========================================================================
+  macos-dmg:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies via Homebrew
+        run: brew install cmake ninja qt vtk gmsh molten-vk
+
+      - name: Compile & Build Self-Contained .dmg
+        run: |
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+          cd build && cpack -G DragNDrop
+
+      - name: Upload macOS .dmg Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimuopOpenCFDMesher-macOS-arm64-dmg
+          path: build/*.dmg
+
+  # ===========================================================================
+  # 2. Windows (.exe NSIS Setup Wizard with all DLLs bundled)
+  # ===========================================================================
+  windows-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Conda-Forge C++ Environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-activate-base: true
+          channels: conda-forge
+          pkgs-dirs: ${{ runner.temp }}/conda_pkgs
+
+      - name: Install Qt6, VTK, Gmsh & NSIS Installer Compiler
+        shell: bash -el {0}
+        run: |
+          conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
+
+      - name: Compile & Build Self-Contained Windows .exe Installer
+        shell: bash -el {0}
+        run: |
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library"
+          cmake --build build
+          cd build && cpack -G NSIS
+
+      - name: Upload Windows .exe Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimuopOpenCFDMesher-Windows-x64-exe
+          path: build/*.exe
+
+  # ===========================================================================
+  # 3. Linux (.deb Package that auto-installs APT dependencies)
+  # ===========================================================================
+  linux-deb:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install APT Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake ninja-build dpkg-dev \
+            qt6-base-dev libqt6opengl6-dev libvtk9-dev libvtk9-qt-dev libgmsh-dev gmsh
+
+      - name: Compile & Build Debian .deb Installer
+        run: |
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+          cd build && cpack -G DEB
+
+      - name: Upload Linux .deb Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimuopOpenCFDMesher-Linux-x64-deb
+          path: build/*.deb
