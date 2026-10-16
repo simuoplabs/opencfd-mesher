@@ -37,36 +37,44 @@ jobs:
           name: pkg-${{ matrix.label }}
           path: build/*.dmg
 
-  windows-zip:
+  windows-exe-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target_arch: x86_64
+            label: Windows-x86_64
+          - target_arch: arm64
+            label: Windows-arm64
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup MSVC Developer Command Prompt (x64)
+      - name: Setup MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - name: Setup Conda (Qt6, VTK, Gmsh)
+      - name: Setup Conda (Qt6, VTK, Gmsh, NSIS)
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           channels: conda-forge
           channel-priority: strict
-      - name: Install Dependencies
+      - name: Install Dependencies & NSIS (.exe generator)
         shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh
-      - name: Build & Package Windows ZIP
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
+      - name: Build Windows .exe Installer (${{ matrix.label }})
         shell: bash -el {0}
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DPACKAGE_ARCH="${{ matrix.target_arch }}" \
             -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library"
           cmake --build build
-          windeployqt build/OpenCFDMesher.exe || true
-          cd build && cpack -G ZIP
-      - name: Upload Artifact
+          cd build && cpack -G NSIS
+      - name: Upload Windows .exe Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pkg-Windows-x86_64
-          path: build/*.zip
+          name: pkg-${{ matrix.label }}
+          path: build/*.exe
 
   linux-deb-x86_64:
     runs-on: ubuntu-24.04
@@ -99,7 +107,7 @@ jobs:
           path: build/*.deb
 
   publish-github-release:
-    needs: [macos-dmg-matrix, windows-zip, linux-deb-x86_64]
+    needs: [macos-dmg-matrix, windows-exe-matrix, linux-deb-x86_64]
     if: always() && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
@@ -116,5 +124,5 @@ jobs:
           generate_release_notes: true
           files: |
             release_assets/*.dmg
-            release_assets/*.zip
+            release_assets/*.exe
             release_assets/*.deb
