@@ -72,11 +72,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install System OpenGL & X11 Headers
+      - name: Ensure dpkg-dev is installed
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential dpkg-dev libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxkbcommon-x11-dev
-      - name: Setup Conda for Qt6 + VTK9 + Gmsh
+          sudo apt-get install -y dpkg-dev
+      - name: Setup Conda for Qt6 + VTK9 + Gmsh + Compiler
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
@@ -84,14 +84,12 @@ jobs:
           channel-priority: strict
       - name: Install Conda Dependencies
         shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh
+        run: conda install -y -c conda-forge c-compiler cxx-compiler cmake ninja qt6-main vtk gmsh libgl-devel libegl-devel
       - name: Build Linux .deb
         shell: bash -el {0}
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
-            -DCMAKE_C_COMPILER=/usr/bin/gcc \
-            -DCMAKE_CXX_COMPILER=/usr/bin/g++
+            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
           cmake --build build
           cd build && cpack -G DEB
       - name: Upload Artifact
