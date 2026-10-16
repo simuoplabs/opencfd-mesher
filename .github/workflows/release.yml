@@ -18,7 +18,7 @@ jobs:
           - os: macos-14
             arch: arm64
             label: macOS-arm64
-          - os: macos-13
+          - os: macos-15-intel
             arch: x86_64
             label: macOS-x86_64
     runs-on: ${{ matrix.os }}
@@ -41,20 +41,20 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup MSVC Developer Command Prompt
+      - name: Setup MSVC Developer Command Prompt (x64)
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - name: Setup Conda (Qt6 & VTK)
+      - name: Setup Conda (Qt6, VTK, Gmsh)
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           channels: conda-forge
           channel-priority: strict
-      - name: Install Qt6, VTK and Gmsh (x64)
+      - name: Install Dependencies
         shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
-      - name: Build Windows Package
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh
+      - name: Build & Package Windows ZIP
         shell: bash -el {0}
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
@@ -72,17 +72,29 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install Native APT Dependencies & dpkg
+      - name: Install System OpenGL & X11 Headers
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build dpkg-dev \
-            qt6-base-dev libqt6opengl6-dev libvtk9-dev libvtk9-qt-dev libgmsh-dev gmsh libgl1-mesa-dev
-      - name: Build Linux .deb Natively via APT
+          sudo apt-get install -y build-essential dpkg-dev libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxkbcommon-x11-dev
+      - name: Setup Conda for Qt6 + VTK9 + Gmsh
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-activate-base: true
+          channels: conda-forge
+          channel-priority: strict
+      - name: Install Conda Dependencies
+        shell: bash -el {0}
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh
+      - name: Build Linux .deb
+        shell: bash -el {0}
         run: |
-          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+            -DCMAKE_C_COMPILER=/usr/bin/gcc \
+            -DCMAKE_CXX_COMPILER=/usr/bin/g++
           cmake --build build
           cd build && cpack -G DEB
-      - name: Upload Linux .deb Artifact
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: pkg-Linux-x86_64
