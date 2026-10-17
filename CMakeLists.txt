@@ -85,7 +85,6 @@ if(APPLE)
 elseif(WIN32)
     add_executable(OpenCFDMesher WIN32 src/main.cpp src/os_platform.h)
     target_compile_definitions(OpenCFDMesher PRIVATE NOMINMAX _USE_MATH_DEFINES)
-    # Force standard main() entry point so WIN32 GUI subsystem links without WinMain errors
     target_link_options(OpenCFDMesher PRIVATE "/ENTRY:mainCRTStartup")
 else()
     add_executable(OpenCFDMesher src/main.cpp src/os_platform.h)
@@ -140,7 +139,25 @@ elseif(WIN32)
     install(TARGETS OpenCFDMesher RUNTIME DESTINATION bin)
     if(DEFINED ENV{CONDA_PREFIX})
         string(REPLACE "\\" "/" CONDA_WIN_PREFIX "$ENV{CONDA_PREFIX}")
-        file(GLOB CONDA_DLLS "${CONDA_WIN_PREFIX}/Library/bin/*.dll")
+        file(GLOB CONDA_DLLS
+            "${CONDA_WIN_PREFIX}/Library/bin/Qt6*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/vtk*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/gmsh*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/TK*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/tbb*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/fmt*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/freetype*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/zlib*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/libpng*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/liblzma*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/lz4*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/double-conversion*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/utf8cpp*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/jsoncpp*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/libexpat*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/libjpeg*.dll"
+            "${CONDA_WIN_PREFIX}/Library/bin/tiff*.dll"
+        )
         install(FILES ${CONDA_DLLS} DESTINATION bin)
         if(EXISTS "${CONDA_WIN_PREFIX}/Library/lib/qt6/plugins/platforms")
             install(DIRECTORY "${CONDA_WIN_PREFIX}/Library/lib/qt6/plugins/platforms" DESTINATION bin)
@@ -165,7 +182,7 @@ endif()
 
 set(CPACK_PACKAGE_NAME "SimuopOpenCFDMesher")
 set(CPACK_PACKAGE_VENDOR "Simuop Labs")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Simuop Labs — FVM & FEM OpenCFD Meshing Studio")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Simuop Labs - FVM and FEM OpenCFD Meshing Studio")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "Simuop OpenCFD Mesher")
 set(CPACK_PACKAGE_EXECUTABLES "OpenCFDMesher" "Simuop OpenCFD Mesher")
