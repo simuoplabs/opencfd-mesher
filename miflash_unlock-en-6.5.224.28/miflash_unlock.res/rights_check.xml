@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window>
+  <VerticalLayout>
+    <VerticalLayout height="70"/>
+    <!--user ico-->
+    <HorizontalLayout height="72">
+      <HorizontalLayout />
+      <HorizontalLayout name="urc_user_icon" height="72" width="72" align="center" bkimage="drawable\default_user_icon.png" backgroundtransparent="true">
+        <Control bkimage="drawable\user_icon_frame.png" height="72" width="72" backgroundtransparent="true" />
+      </HorizontalLayout>
+      <HorizontalLayout />
+    </HorizontalLayout >
+    <Label name="urc_user_nick_name" text="" height="34" font="14" textcolor="#888888" backgroundtransparent="true" align="center,venter"/>
+    <VerticalLayout height="40"/>
+
+    <!--prgress-->
+    <VerticalLayout height="72">
+      <Label name="urc_state" text="Checking if your Mi Account has permissions&#8230;" height="40" font="30" textcolor="#2c333a" backgroundtransparent="true" align="center,venter"/>
+      <VerticalLayout height="5"/>
+      <HorizontalLayout height="34" visible="true">
+        <HorizontalLayout />
+        <GifAnim name="urc_checking_progress" visible="false" bkimage="drawable\progress_bar.gif" width="310" height="8"/>
+        <Label name="urc_err_msg" text="Go to unlock.update.miui.com to apply for Mi Unlock support and view the progress" height="34" width="390" font="14" textcolor="#888888" backgroundtransparent="true" align="top" visible="false"/>
+        <HorizontalLayout />
+      </HorizontalLayout>
+    </VerticalLayout>
+
+    <!--apply button-->
+    <VerticalLayout height="21"/>
+    <HorizontalLayout >
+      <HorizontalLayout />
+      <Button name="urc_go_apply" text="Go" font="16" height="42" width="180" normalimage="file='drawable\common_btn.png' source='0,0,142,42'" hotimage="file='drawable\common_btn.png' source='142,0,284,42'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42'" align="center,venter" visible="false"/>
+      <Button name="urc_retry" text="Try again" font="16" height="42" width="180" normalimage="file='drawable\common_btn.png' source='0,0,142,42'" hotimage="file='drawable\common_btn.png' source='142,0,284,42'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42'" align="center,venter" visible="false"/>
+      <HorizontalLayout />
+    </HorizontalLayout >
+  </VerticalLayout>
+</Window>

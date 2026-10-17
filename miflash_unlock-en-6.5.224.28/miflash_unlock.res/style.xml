@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<Window>
+  <Font name="微软雅黑" size="12" id="12" />
+  <Font name="微软雅黑" size="12" id="bold_12" bold="true" />
+  <Font name="微软雅黑" size="12" id="underline_12" underline="true"/>
+  <Font name="微软雅黑" size="12" id="strikeout_12" strikeout="true"/>
+  <Font name="微软雅黑" size="13" id="13" />
+  <Font name="微软雅黑" size="14" id="default" default="true" />
+  <Font name="微软雅黑" size="14" id="bold_14" bold="true" />
+  <Font name="微软雅黑" size="14" id="underline_14" underline="true" />
+  <Font name="微软雅黑" size="16" id="16" />
+  <Font name="微软雅黑" size="16" id="bold_16" bold="true" />
+  <Font name="微软雅黑" size="16" id="underline_16" underline="true"/>
+  <Font name="微软雅黑" size="18" id="18" />
+  <Font name="微软雅黑" size="18" id="bold_18" bold="true" />
+  <Font name="微软雅黑" size="20" id="20" />
+  <Font name="微软雅黑" size="22" id="22" />
+  <Font name="微软雅黑" size="22" id="bold_22" bold="true" />
+  <Font name="微软雅黑" size="24" id="24" />
+  <Font name="微软雅黑" size="24" id="bold_24" bold="true" />
+  <Font name="微软雅黑" size="28" id="28" />
+  <Font name="微软雅黑" size="30" id="30" />
+  <Font name="微软雅黑" size="32" id="bold_32" bold="true" />
+  <Font name="微软雅黑" size="36" id="36" bold="true" />
+  <Font name="微软雅黑" size="46" id="46" />
+  <Font name="微软雅黑" size="48" id="48" />
+  <Font name="微软雅黑" size="48" id="bold_48" bold="true" />
+  <Font name="微软雅黑" size="68" id="68" />
+  <Font name="微软雅黑" size="12" id="songti_12" />
+  <Font name="微软雅黑" size="12" id="songti_underline_12" underline="true"/>
+  <Font name="微软雅黑" size="12" id="songti_bold_12" bold="true"/>
+  <Font name="arial" size="12" id="arial_12" />
+  <Font name="arial" size="16" id="arial_blod_16" bold="true"/>
+ 
+  <Default name="VScrollBar" value="width=&quot;8&quot; maxwidth=&quot;8&quot; thumbnormalimage=&quot;file='drawable\scroll_bar.png' corner='0,1,0,1'&quot;"/>
+</Window>

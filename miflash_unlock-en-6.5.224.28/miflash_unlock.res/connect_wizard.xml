@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window>
+  <VerticalLayout left="0" right="0" top="0" bottom="0" >
+    <VerticalLayout height="50"/>
+    <HorizontalLayout height="332">
+      <HorizontalLayout width="115" />
+      <Control width="148" bkimage="drawable\usb_disconnected.png"  backgroundtransparent="true"/>
+      <HorizontalLayout width="66" />
+      <VerticalLayout width="370">
+        <Label text="Not connected to the phone" height="40" font="22" textcolor="#000000" backgroundtransparent="true"
+                 align="near,venter"/>
+        <VerticalLayout height="60">
+          <Label text="Turn off the phone, hold Volume Down and Power buttons to enter Bootloader, and connect the phone again." height="60" font="14" textcolor="#888888" backgroundtransparent="true"
+             align="near,venter" multiline="true"/>
+        </VerticalLayout >
+
+        <Control height="1" bkimage="drawable\seperate_line.png"  backgroundtransparent="true"/>
+        <VerticalLayout height="35"/>
+        <Label text="Attention" height="40" font="22" textcolor="#000000" backgroundtransparent="true" align="near,venter"/>
+        <VerticalLayout height="8"/>
+        <Label text="1.After you unlock the device, it will become less secure. Your personal data may be leaked or lost." height="40" font="14" textcolor="#888888" backgroundtransparent="true" align="near,venter" multiline="true"/>
+        <VerticalLayout height="8"/>
+        <Label text="2.Fingerprint recognition, Find device, and other security features will no longer be reliable." height="40" font="14" textcolor="#888888" backgroundtransparent="true" align="near,venter" multiline="true"/>
+        <VerticalLayout height="8" visible="false"/>
+		<HorizontalLayout height="20" visible="false" >
+			<Label text="3.Other problems encountered during unlocking?" width="180" font="14" textcolor="#888888" backgroundtransparent="true" align="near,venter" multiline="true"/>
+			<Text name="FAQ_url_btn" text="{u}{a}Click View FAQ{/a}{/u}" showhtml="true" width="90" font="14" textcolor="#999999"/>
+		</HorizontalLayout >
+		<VerticalLayout />
+      </VerticalLayout>
+    </HorizontalLayout>
+    <VerticalLayout height="25"/>
+    <HorizontalLayout height="42">
+      <HorizontalLayout />
+      <Button text="Unlock" enabled="false" font="16" height="42" width="180" normalimage="file='drawable\common_btn.png' source='0,0,142,42'" hotimage="file='drawable\common_btn.png' source='142,0,284,42'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42'" align="center,venter"/>
+      <HorizontalLayout />
+    </HorizontalLayout>
+  </VerticalLayout>
+</Window>

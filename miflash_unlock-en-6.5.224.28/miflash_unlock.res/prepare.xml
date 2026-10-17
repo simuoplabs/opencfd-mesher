@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window>
+  <VerticalLayout>
+    <!--top space-->
+    <VerticalLayout height="50"/>
+    <!--main veiw-->
+    <HorizontalLayout height="342">
+      <!--left space-->
+      <HorizontalLayout width="115" />
+      <!--pictrue sapce-->
+      <VerticalLayout height="342" width="148">
+        <Control width="148" bkimage="drawable\usb_connected.png" />
+        <VerticalLayout height="10" />
+      </VerticalLayout>
+      <!--text space-->
+      <VerticalLayout>
+        <!--regular text space-->
+        <HorizontalLayout height="273" >
+          <HorizontalLayout width="66" />
+          <VerticalLayout width="370" >
+            <Label text="Phone connected" height="40" font="22" textcolor="#000000"
+               align="near,venter"/>
+            <VerticalLayout height="60">
+              <!--check clear succeed-->
+              <Label name="device_name" text="Mi Phone" height="30" font="14" textcolor="#888888" align="near,venter" multiline="true"/>
+              <Label name="warn_erasure_data" text="Unlock device will erase user data" visible="false" height="30" font="14" textcolor="#FF0000" align="near,venter" multiline="true"/>
+              <!--checking clear status-->
+              <HorizontalLayout name="checking_clear_view" visible="false" height="30" >
+                <Label text="Checking device status..." height="30" font="14" textcolor="#888888" align="near,venter" multiline="true"/>
+                <GifAnim name="checking_gif" bkimage="drawable\wait.gif" width="18" height="18" autoplay="true"/>
+              </HorizontalLayout >
+              <!--check clear error-->
+              <HorizontalLayout name="checking_clear_error" visible="false" height="30" >
+                <Label name="check_error_label" height="30" font="14" textcolor="#FF0000" align="near,venter" multiline="true"/>
+                <Button name="check_again" text="Try again" font="14" height="30" width="80" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" align="center,venter"/>
+              </HorizontalLayout >
+            </VerticalLayout >
+
+            <Control height="1" bkimage="drawable\seperate_line.png" />
+            <VerticalLayout height="35"/>
+            <Label text="Attention" height="40" font="22" textcolor="#000000" align="near,venter"/>
+            <VerticalLayout height="8"/>
+            <Label text="1.After you unlock the device, it will become less secure. Your personal data may be leaked or lost." height="40" font="14" textcolor="#888888" align="near,venter" multiline="true"/>
+            <VerticalLayout height="8"/>
+            <Label text="2.Fingerprint recognition, Find device, and other security features will no longer be reliable." height="40" font="14" textcolor="#888888" align="near,venter" multiline="true"/>
+			<VerticalLayout height="8" visible="false"/>
+			<HorizontalLayout height="20" visible="false" >
+				<Label text="3.3.Other problems encountered during unlocking？" width="180" font="14" textcolor="#888888" backgroundtransparent="true" align="near,venter" multiline="true"/>
+				<Text name="FAQ_url_btn_prepare" text="{u}{a}Click View FAQ{/a}{/u}" showhtml="true" width="90" font="14" textcolor="#999999"/>
+			</HorizontalLayout >
+			<VerticalLayout />
+		  </VerticalLayout>
+        </HorizontalLayout >
+
+        <VerticalLayout height="15"/>
+        <!--change text space-->
+
+        <!--one line text-->
+        <VerticalLayout name="variable_text_one_view" width="300"  valign="center" visible="false">
+          <VerticalLayout height="35"/>
+          <HorizontalLayout >
+            <HorizontalLayout width="86" />
+            <Label text="No need to unlock this device" height="30" font="18" textcolor="#00FF00 " valign="center"/>
+          </HorizontalLayout >
+        </VerticalLayout >
+
+      </VerticalLayout>
+    </HorizontalLayout>
+    <VerticalLayout height="15"/>
+    <HorizontalLayout height="42">
+      <HorizontalLayout />
+      <Button name="unlock_btn" text="Unlock" font="16" height="42" width="180" normalimage="file='drawable\common_btn.png' source='0,0,142,42'" hotimage="file='drawable\common_btn.png' source='142,0,284,42'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42'" align="center,venter"/>
+      <HorizontalLayout />
+    </HorizontalLayout>
+  </VerticalLayout>
+</Window>

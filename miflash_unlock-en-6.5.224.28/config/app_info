@@ -1,0 +1,10 @@
+{
+    "id" : "{CB0B66B3-754C-4F4E-BD94-23756C43BDEA}",
+    "language" : "en",
+    "region": "",
+    "account_login_url": "https://account.xiaomi.com/pass/serviceLogin?sid=unlockApi&json=false&passive=true&hidden=false&_snsDefault=facebook&_locale=en_US&checkSafePhone=true",
+    "account_reg_url": "https://account.xiaomi.com/pass/register?&_snsDefault=facebook&_locale=en",
+    "account_pwd_url": "https://account.xiaomi.com/pass/forgetPassword?&_snsDefault=facebook&_locale=en",
+    "unlock_updates_url": "http://update.miui.com/updates/mi-updateV6.php?v=1.0.0.0&c=4.1&d=miflash_unlock",
+    "unlock_url": "https://unlock.update.miui.com/?lang=en"
+}

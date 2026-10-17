@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window >
+  <VerticalLayout name="web_login" float="true" pos="2,51,818,530">
+    <GifAnim name="waiting_anti" visible="false" float="true" bkimage="drawable\wait.gif" pos="348,96,462,210"/>
+
+    <HorizontalLayout name="net_error_layout" visible="true" padding="10,0,10,0">
+      <VerticalLayout>
+        <Label text="The network is not available" textcolor="#505050" font="48" height="60" padding="0,100,0,0"/>
+        <Label text="Please connect to the network and refresh" textcolor="#a6a6a6" font="14" height="60"  />
+        <Button name="refresh_web" left="100" top="296" height="42" width="180" text="Refresh" textcolor="#666666" normalimage="file='drawable\common_btn.png' source='0,0,142,42'" hotimage="file='drawable\common_btn.png' source='142,0,284,42'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42'" />
+      </VerticalLayout>
+      <Control width="390" height="410" bkimage="file='drawable\net_err.png' source='110,110,500, 520'" />
+    </HorizontalLayout>
+	
+	<HorizontalLayout name="re_login_layout" visible="true" float="true" pos="20,51,800,430" padding="10,0,10,0">
+      <VerticalLayout>
+        <Label text="Local verification has been completed" textcolor="#505050" font="22" height="60" padding="0,50,0,0"/>
+        <Label text="Please re-login your accoun" textcolor="#a6a6a6" font="14" height="60"  />
+        <Button name="re_login_btn" left="100" top="296" height="42" width="180" text="login" textcolor="#666666" normalimage="file='drawable\common_btn.png' source='0,0,142,42'" hotimage="file='drawable\common_btn.png' source='142,0,284,42'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42'" />
+      </VerticalLayout>
+      <Control width="360" height="161" bkimage="file='drawable\keyboard.png'" padding="10,50,0,0"/>
+    </HorizontalLayout>
+  </VerticalLayout>
+</Window>

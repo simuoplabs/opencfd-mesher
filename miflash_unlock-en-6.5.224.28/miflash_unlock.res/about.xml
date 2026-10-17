@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window  size="450,255" roundcorner="4,4" caption="0,0,0,50" showdirty="false">
+  <Include source="style.xml" />
+  <!--back image-->
+  <VerticalLayout left="0" top="0" width="450" height="255" bkimage="file='drawable\about_bg.png' source='1,1,590,420' corner='4,33,4,4'">
+    <!--title bar -->
+    <HorizontalLayout left="0" top="6" height="35" width="450" align="center, venter">
+      <!--left spaece-->
+      <HorizontalLayout width="14"/>
+      <!--picture -->
+      <VerticalLayout width="26">
+        <VerticalLayout />
+        <Control width="20" height="13" bkimage="drawable\mi.png" align="center,venter"/>
+        <VerticalLayout />
+      </VerticalLayout >
+
+      <!--daloge name-->
+      <VerticalLayout width="130" >
+        <VerticalLayout />
+        <Label text="About" align="left" font="14" textcolor="#888888"/>
+        <VerticalLayout />
+      </VerticalLayout >
+      <HorizontalLayout width="250" />
+      <!--close button-->
+      <VerticalLayout >
+        <VerticalLayout width="11"/>
+        <Button name="about_close_box" width="11" height="11" normalimage="file='drawable\close.png' source='0,0,11,11'" hotimage="file='drawable\close.png' source='11,0,22,11'" pushedimage="file='drawable\close.png' source='22,0,33,11'"/>
+        <VerticalLayout />
+      </VerticalLayout >
+      <HorizontalLayout width="16" />
+    </HorizontalLayout >
+
+    <!--about content -->
+    <HorizontalLayout height="220" width="450">
+      <!--left spaece-->
+      <HorizontalLayout width="28" />
+      <VerticalLayout width="394">
+
+        <VerticalLayout height="15"/>
+        <HorizontalLayout height="32" width="394" >
+          <VerticalLayout height="32" width="110">
+            <VerticalLayout height="9"/>
+            <Label text="PC ID:" height="15" width="110" align="left" font="14" textcolor="#888888"/>
+            <VerticalLayout height="8"/>
+          </VerticalLayout >
+          <HorizontalLayout width="10" />
+		  <VerticalLayout height="32" width="150">
+            <VerticalLayout height="4"/>
+			<RichEdit name="unlock_about_pcid_content" text="" height="20" width="150" align="left" font="14" textcolor="#888888"/>
+            <VerticalLayout height="8"/>
+          </VerticalLayout > 
+		  <HorizontalLayout width="10" />
+		  <Button name="open_log" text="Log path" width="100" height="32" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" align="center,venter" />
+		</HorizontalLayout >
+
+        <VerticalLayout height="10"/>
+        <HorizontalLayout height="32" width="394" >
+          <VerticalLayout height="32" width="270">
+            <VerticalLayout />
+            <Label text="Click the button to install the drive" height="15" align="left" font="14" textcolor="#888888"/>
+            <VerticalLayout />
+          </VerticalLayout >
+
+          <HorizontalLayout width="10" />
+          <Button name="check_drive" text="Check" tooltip="Check Driver" width="100" height="32" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" align="center,venter" />
+        </HorizontalLayout >
+
+        <VerticalLayout height="10"/>
+        <HorizontalLayout height="32" width="394" >
+          <VerticalLayout height="32" width="110">
+            <VerticalLayout />
+            <Label text="Current version:" height="15" width="110" align="left" font="14" textcolor="#888888"/>
+            <VerticalLayout />
+          </VerticalLayout >
+          <HorizontalLayout width="10" />
+          <VerticalLayout height="32" width="150">
+            <VerticalLayout />
+            <Label name="unlock_about_version_content" height="15" width="150" align="left" font="14" textcolor="#888888" readonly="true"/>
+            <VerticalLayout />
+          </VerticalLayout >
+          <HorizontalLayout width="10" />
+          <Button name="check_version" text="Check" tooltip="Check Version" width="100" height="32" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" align="center,venter" />
+        </HorizontalLayout >
+
+        <VerticalLayout name="down_load_new_version_view_place" height="10" visible="false"/>
+        <HorizontalLayout name="down_load_new_version_view" height="32" width="394" visible="false">
+          <VerticalLayout height="32" width="110">
+            <VerticalLayout />
+            <Label text="New version:" height="15" width="110" align="left" font="14" textcolor="#FF0000"/>
+            <VerticalLayout />
+          </VerticalLayout >
+          <HorizontalLayout width="10" />
+          <VerticalLayout height="32" width="150">
+            <VerticalLayout />
+            <Label name="unlock_about_new_version_content" text="12465465" height="15" width="150" align="left" font="14" textcolor="#FF0000" readonly="true"/>
+            <VerticalLayout />
+          </VerticalLayout >
+          <HorizontalLayout width="10" />
+          <Button name="down_load_new_version" text="Download" width="100" height="32" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" align="center,venter" />
+        </HorizontalLayout >
+
+        <VerticalLayout />
+        <HorizontalLayout height="32" width="394" >
+          <HorizontalLayout />
+          <Button name="close_about_btn" text="Close" width="100" height="32" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" align="center,venter" />
+          <HorizontalLayout />
+        </HorizontalLayout >
+        <VerticalLayout height="20"/>
+      </VerticalLayout >
+      <HorizontalLayout width="28"/>
+    </HorizontalLayout >
+
+  </VerticalLayout >
+</Window>

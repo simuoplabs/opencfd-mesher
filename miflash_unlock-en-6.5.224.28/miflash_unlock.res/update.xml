@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window  size="350,150" roundcorner="4,4" caption="0,0,0,50" showdirty="false">
+  <Include source="style.xml" />
+  <!--back image-->
+  <VerticalLayout left="0" top="0" width="350" height="150" bkimage="file='drawable\about_bg.png' source='1,1,590,420' corner='4,33,4,4'">
+    <!--title bar -->
+    <HorizontalLayout left="0" top="6" height="35" width="350" align="center, venter">
+      <!--left spaece-->
+      <HorizontalLayout width="14"/>
+      <!--picture -->
+      <VerticalLayout width="26">
+        <VerticalLayout />
+        <Control width="20" height="13" bkimage="drawable\mi.png" align="center,venter"/>
+        <VerticalLayout />
+      </VerticalLayout >
+
+      <!--daloge name-->
+      <VerticalLayout width="130" >
+        <VerticalLayout />
+        <Label text="Updates" align="left" font="14" textcolor="#888888"/>
+        <VerticalLayout />
+      </VerticalLayout >
+      <HorizontalLayout width="150" />
+      <!--close button-->
+      <VerticalLayout >
+        <VerticalLayout width="11"/>
+        <Button name="about_close_box" width="11" height="11" normalimage="file='drawable\close.png' source='0,0,11,11'" hotimage="file='drawable\close.png' source='11,0,22,11'" pushedimage="file='drawable\close.png' source='22,0,33,11'"/>
+        <VerticalLayout />
+      </VerticalLayout >
+      <HorizontalLayout width="16" />
+    </HorizontalLayout >
+
+    <!--about content -->
+    <HorizontalLayout height="115" width="350">
+      <!--left spaece-->
+      <HorizontalLayout width="28" />
+      <VerticalLayout width="350">
+        <VerticalLayout height="5"/>
+        <HorizontalLayout height="32" width="350" >
+		  <HorizontalLayout width="20" />
+          <VerticalLayout height="32" width="110">
+            <VerticalLayout />
+            <Label text="Current version:" height="15" align="left" font="14" textcolor="#888888"/>
+            <VerticalLayout />
+          </VerticalLayout >
+          <HorizontalLayout width="10" />
+          <VerticalLayout height="32" width="200">
+            <VerticalLayout />
+            <Label name="unlock_update_current_ver" text="1231231212312312312" height="15" width="200" align="left" font="14" textcolor="#888888" readonly="true"/>
+            <VerticalLayout />
+          </VerticalLayout >
+        </HorizontalLayout >
+
+        <HorizontalLayout name="down_load_new_version_view" height="32" width="350">
+		  <HorizontalLayout width="20" />
+          <VerticalLayout height="32" width="110">
+            <VerticalLayout />
+            <Label text="  New  version  :" height="15" align="left" font="14" textcolor="#FF0000"/>
+            <VerticalLayout />
+          </VerticalLayout >
+          <HorizontalLayout width="10" />
+          <VerticalLayout height="32" width="200">
+            <VerticalLayout />
+            <Label name="unlock_update_new_ver" text="1231231212312312312" height="15" width="200" align="left" font="14" textcolor="#FF0000" readonly="true"/>
+            <VerticalLayout />
+          </VerticalLayout >
+    
+        </HorizontalLayout >
+
+        <VerticalLayout />
+        <HorizontalLayout height="32" width="300">
+          <HorizontalLayout />
+          <Button name="unlock_update_download" text="下载" width="100" height="32" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" align="center,venter" />
+          <HorizontalLayout />
+        </HorizontalLayout >
+        <VerticalLayout height="10"/>
+      </VerticalLayout >
+      <HorizontalLayout width="28"/>
+    </HorizontalLayout >
+
+  </VerticalLayout >
+</Window>

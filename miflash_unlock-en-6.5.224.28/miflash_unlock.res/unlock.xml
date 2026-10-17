@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window>
+  <VerticalLayout left="0" right="0" top="0" bottom="0">
+    <VerticalLayout height="55"/>
+    <!--百分比值-->
+	<VerticalLayout name="unlock_percent_layout" height="170" visible="false">
+		<HorizontalLayout height="130" align="center,venter">
+		  <HorizontalLayout />
+		  <HorizontalLayout width="180">
+			<Label name="unlock_percent_value" font="68" textcolor="#4b8d0e" width="120"  align="near,venter" />
+			<VerticalLayout height="130" width="32">
+				<VerticalLayout height="30"/>
+				<Label text="%" font="28" textcolor="#4b8d0e" width="32"  align="near,venter"/>
+				<VerticalLayout />
+			</VerticalLayout >
+		  </HorizontalLayout >
+		  <HorizontalLayout />
+		</HorizontalLayout>
+		<VerticalLayout height="40"/>
+	</VerticalLayout>
+
+    <!--错误信息-->
+    <VerticalLayout name="unlock_fail_retry_layout" height="170" visible="false">
+      <Label name="unlock_error_msg" text="Couldn't verify device" font="30" height="40" textcolor="#ef2e25" align="center,venter" />
+      <VerticalLayout height="10" />
+      <Label name="unlock_error_detail_msg" font="16" textcolor="#666666" align="center,venter" multiline="true" padding="20,0,20,0"/>
+      <VerticalLayout height="10" />
+      <HorizontalLayout >
+        <HorizontalLayout />
+        <Button name="unlock_retry_btn" text="Unlock again" width="100" height="42" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" backgroundtransparent="true" align="center,venter" />
+        <HorizontalLayout />
+      </HorizontalLayout >
+    </VerticalLayout>
+
+    <!--解锁成功提示-->
+    <VerticalLayout name="unlock_success_layout" height="170" visible="true">
+      <Label name="unlock_success" text="Unlocked successfully" font="28" height="40" textcolor="#008000" align="center,venter" />
+      <VerticalLayout height="20" />
+      <HorizontalLayout height="38">
+        <HorizontalLayout />
+        <Button name="unlock_reboot_btn" text="Reboot phone" visible="true" width="120" height="38" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" backgroundtransparent="true" align="center,venter" />
+        <Button name="unlock_again_btn" text="Unlock again" visible="false" width="120" height="32" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" backgroundtransparent="true" align="center,venter" />
+        <HorizontalLayout />
+      </HorizontalLayout >
+      <VerticalLayout />
+	  <VerticalLayout height="40"/>
+    </VerticalLayout>
+
+
+    <!--三个解锁过程列表-->
+    <HorizontalLayout height="244">
+      <HorizontalLayout />
+      <VerticalLayout width="705">
+        <VerticalLayout height="45"/>
+        <Control height="1" bkimage="drawable\seperate_line.png"  backgroundtransparent="true"/>
+        <HorizontalLayout height="45">
+          <Label name="unlock_verify_label" text="Verifying device" align="near,venter"/>
+          <VerticalLayout width="18">
+            <VerticalLayout />
+            <GifAnim name="unlock_verify_status_progress" visible="true" bkimage="drawable\wait.gif" width="18" height="18" autoplay="true"/>
+            <Control name="unlock_verify_status_ok" visible="false" width="18" height="18" bkimage="drawable\step_complete.png"  backgroundtransparent="true"  align="far,venter"/>
+            <Control name="unlock_verify_status_err" visible="false"  width="18" height="18" bkimage="drawable\step_error.png"  backgroundtransparent="true"  align="far,venter"/>
+            <VerticalLayout />
+          </VerticalLayout>
+        </HorizontalLayout>
+        <Control height="1" bkimage="drawable\seperate_line.png"  backgroundtransparent="true"/>
+        <HorizontalLayout height="45">
+          <Label name="unlock_label" text="Unlocking" align="near,venter"/>
+          <VerticalLayout width="18">
+            <VerticalLayout />
+            <GifAnim name="unlock_status_progress" visible="false" bkimage="drawable\wait.gif" width="18" height="18" autoplay="true"/>
+            <Control name="unlock_status_ok" visible="true" width="18" height="18" bkimage="drawable\step_complete.png"  backgroundtransparent="true"  align="far,venter"/>
+            <Control name="unlock_status_err" visible="false"  width="18" height="18" bkimage="drawable\step_error.png"  backgroundtransparent="true"  align="far,venter"/>
+            <VerticalLayout />
+          </VerticalLayout>
+        </HorizontalLayout>
+        <Control height="1" bkimage="drawable\seperate_line.png"  backgroundtransparent="true"/>
+        <HorizontalLayout height="45">
+          <Label name="unlock_reboot_label" text="Done" align="near,venter"/>
+          <VerticalLayout width="18">
+            <VerticalLayout />
+            <GifAnim name="unlock_reboot_status_progress" visible="false" bkimage="drawable\wait.gif" width="18" height="18" autoplay="true"/>
+            <Control name="unlock_reboot_status_ok" visible="false" width="18" height="18" bkimage="drawable\step_complete.png"  backgroundtransparent="true"  align="far,venter"/>
+            <Control name="unlock_reboot_status_err" visible="true"  width="18" height="18" bkimage="drawable\step_error.png"  backgroundtransparent="true"  align="far,venter"/>
+            <VerticalLayout />
+          </VerticalLayout>
+        </HorizontalLayout>
+        <Control height="1" bkimage="drawable\seperate_line.png"  backgroundtransparent="true"/>
+      </VerticalLayout>
+      <HorizontalLayout />
+    </HorizontalLayout>
+    <VerticalLayout />
+  </VerticalLayout>
+</Window>

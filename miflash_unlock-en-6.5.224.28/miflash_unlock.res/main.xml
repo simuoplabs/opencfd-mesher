@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Window size="820,560" mininfo="820,560" maxinfo="820,560" roundcorner="4,4" caption="0,0,0,80" showdirty="false">
+  <Include source="style.xml" />
+  <!--设置背景  -->
+  <VerticalLayout left="0" top="0" width="820" height="560" align="near, venter" bkimage="file='drawable\bg.png'">
+    <!--标题栏布局  -->
+    <HorizontalLayout left="0" top="6" height="45" width="820" align="center, venter"  padding="20,0,20,0">
+      <!--标题信息  -->
+      <HorizontalLayout childvalign="vcenter" childalign="left">
+        <Control width="20" height="13" bkimage="drawable\mi.png"/>
+        <Label name="app_name" text="Mi Unlock"  width="95" font="14" textcolor="#888888" padding="5,0,0,0"/>
+        <Label name="app_cur_version" font="14" textcolor="#888888" visible="false"/>
+      </HorizontalLayout>
+      <!--登录信息  -->
+      <HorizontalLayout />
+      <HorizontalLayout name="account_panel" visible="false" width="190" childvalign="vcenter" childalign="right" >
+        <Label name="skin_account_user_id" text="" font="14" textcolor="#888888" align="right" />
+        <Control width="1" bkimage="drawable\I.png" height="15" padding="5,0,5,0"/>
+        <Button name="skin_account_logout_btn" text="{u}sign out{/u}" showhtml="true" width="70" font="14" textcolor="#888888"/>
+
+      </HorizontalLayout >
+      <!--按钮  -->
+      <HorizontalLayout width="62" childvalign="vcenter" childalign="right" padding="15,0,0,0">
+        <Button name="about_btton" width="14" height="14" normalimage="file='drawable\setting.png' source='5,0,19,14'" hotimage="file='drawable\setting.png' source='29,0,43,14'" pushedimage="file='drawable\setting.png' source='53,0,67,14'"/>
+        <HorizontalLayout width="13"/>
+        <Button name="min_box" width="11" height="11" normalimage="file='drawable\min.png' source='0,0,12,11'" hotimage="file='drawable\min.png' source='12,0,24,11'" pushedimage="file='drawable\min.png' source='24,0,36,11'"/>
+        <HorizontalLayout width="13"/>
+        <Button name="close_box" width="11" height="11" normalimage="file='drawable\close.png' source='0,0,11,11'" hotimage="file='drawable\close.png' source='11,0,22,11'" pushedimage="file='drawable\close.png' source='22,0,33,11'"/>
+      </HorizontalLayout >
+    </HorizontalLayout>
+    <!--页面内容-->
+    <VerticalLayout >
+      <HorizontalLayout >
+        <TabLayout name="unlock_tab" selectedid="0">
+          <HorizontalLayout>
+            <DisclaimHandle />
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <LoginHandle />
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <RightsCheckHandle />
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <ConnectWizardHandle />
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <PrepareHandle />
+          </HorizontalLayout>
+          <HorizontalLayout>
+            <UnlockHandle />
+          </HorizontalLayout>
+        </TabLayout>
+      </HorizontalLayout>
+    </VerticalLayout>
+    <VerticalLayout name="status_bar" height="30">
+      <HorizontalLayout >
+        <!--Button name="app_new_version" autosize="true" font="underline_12" align="near,venter" textcolor="#0000ff" visible="false"/-->
+		<Button name="feedback" text="{u}bugs & feedback{/u}" showhtml="true" textcolor="#5f86e2" width="120" padding="10,0,0,0" align="right" normalimage="" hotimage="" pushedimage=""/>
+		<Button name="open_privacy_policy" text="{u}Privacy Policy{/u}" showhtml="true" textcolor="#5f86e2" padding="320,0,0,0" align="right" normalimage="" hotimage="" pushedimage=""/>
+        <Label name="version_info" text="" font="14" textcolor="#999999" align="right" autosize="true" />
+        <HorizontalLayout width="16" />
+      </HorizontalLayout >
+    </VerticalLayout>
+  </VerticalLayout>
+
+</Window>

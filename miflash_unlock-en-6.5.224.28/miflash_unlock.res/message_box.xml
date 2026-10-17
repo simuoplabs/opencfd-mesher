@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window size="470,260" roundcorner="4,4" caption="0,0,0,50" showdirty="false">
+	<Include source="style.xml" />
+	<!--back image-->
+	<VerticalLayout left="0" top="0" align="near, venter" bkimage="file='drawable\about_bg.png' source='1,1,590,420' corner='4,33,4,4'">
+		<!--title bar -->
+		<HorizontalLayout left="0" top="6" height="35" align="center, venter">
+			<!--left spaece-->
+			<HorizontalLayout width="14"/>
+			<!--picture -->
+			<VerticalLayout width="26">
+				<VerticalLayout />
+				<Control width="20" height="13" bkimage="drawable\mi.png" backgroundtransparent="true" align="center,venter"/> 
+				<VerticalLayout />
+			</VerticalLayout >
+			
+			<!--daloge name-->
+			<VerticalLayout width="130">
+				<VerticalLayout />
+				<Label text="Tips" align="left" font="14" textcolor="#FF0000"/>
+				<VerticalLayout />
+			</VerticalLayout >
+			<HorizontalLayout width="268" />
+			<!--close button-->
+			<VerticalLayout >
+				<VerticalLayout width="11"/>
+				<Button name="sys_close_btn" width="11" height="11" normalimage="file='drawable\close.png' source='0,0,11,11'" hotimage="file='drawable\close.png' source='11,0,22,11'" pushedimage="file='drawable\close.png' source='22,0,33,11'"/>
+				<VerticalLayout />
+			</VerticalLayout >
+			<HorizontalLayout width="16" />
+		</HorizontalLayout >
+		
+		<!--message content -->
+		<VerticalLayout>
+			<!--message text -->
+			<VerticalLayout height="40"/>
+			<VerticalLayout childalign="center" height="105" valign="center" >
+				<RichEdit name="text_msg" align="center" backgroundtransparent="true" readonly="true" font="18" padding="0,0,0,0" textcolor="#FF0000" width="350" text="" vscrollbar="true" enabled="false"/>
+			</VerticalLayout >
+			
+			<VerticalLayout height="4"/>
+			<!--message button -->
+			<VerticalLayout height="40" align="center" childalign="center">
+				<Button name="yes_btn" textcolor="#FF0000" disabledtextcolor="#999999" width="150" height="40" font="16" normalimage="file='drawable\common_btn.png' source='0,0,142,42' corner='4,4,4,4'" hotimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" pushedimage="file='drawable\common_btn.png' source='284,0,426,42' corner='4,4,4,4'" focusedimage="file='drawable\common_btn.png' source='142,0,284,42' corner='4,4,4,4'" disabledimage="file='drawable\common_btn.png' source='426,0,568,42' corner='4,4,4,4'" backgroundtransparent="true" align="center,venter" />
+			</VerticalLayout >
+			<VerticalLayout height="35"/>
+		</VerticalLayout >
+		
+	</VerticalLayout >
+</Window>
