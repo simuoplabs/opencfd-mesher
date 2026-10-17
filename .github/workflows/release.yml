@@ -49,26 +49,30 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install Official NSIS via Chocolatey
+        run: choco install nsis -y
       - name: Setup MSVC Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
-      - name: Setup Conda (Qt6, VTK, Gmsh, NSIS)
+      - name: Setup Conda (Qt6, VTK, Gmsh)
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
           channels: conda-forge
           channel-priority: strict
-      - name: Install Dependencies & NSIS (.exe generator)
+      - name: Install Dependencies
         shell: bash -el {0}
-        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh nsis
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh
       - name: Build Windows .exe Installer (${{ matrix.label }})
         shell: bash -el {0}
         run: |
+          export PATH="/c/Program Files (x86)/NSIS:/c/Program Files/NSIS:$PATH"
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
             -DPACKAGE_ARCH="${{ matrix.target_arch }}" \
             -DCMAKE_PREFIX_PATH="$CONDA_PREFIX/Library"
           cmake --build build
+          windeployqt build/OpenCFDMesher.exe || true
           cd build && cpack -G NSIS
       - name: Upload Windows .exe Artifact
         uses: actions/upload-artifact@v4
@@ -80,11 +84,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Ensure dpkg-dev is installed
+      - name: Install System OpenGL & Packaging Tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev
-      - name: Setup Conda for Qt6 + VTK9 + Gmsh + Compiler
+          sudo apt-get install -y build-essential dpkg-dev libgl1-mesa-dev libegl1-mesa-dev libxkbcommon-dev libxkbcommon-x11-dev
+      - name: Setup Conda for Qt6 + VTK9 + Gmsh
         uses: conda-incubator/setup-miniconda@v3
         with:
           auto-activate-base: true
@@ -92,12 +96,15 @@ jobs:
           channel-priority: strict
       - name: Install Conda Dependencies
         shell: bash -el {0}
-        run: conda install -y -c conda-forge c-compiler cxx-compiler cmake ninja qt6-main vtk gmsh libgl-devel libegl-devel
+        run: conda install -y -c conda-forge cmake ninja qt6-main vtk gmsh
       - name: Build Linux .deb
         shell: bash -el {0}
         run: |
           cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
+            -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+            -DCMAKE_C_COMPILER=/usr/bin/gcc \
+            -DCMAKE_CXX_COMPILER=/usr/bin/g++ \
+            -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,$CONDA_PREFIX/lib"
           cmake --build build
           cd build && cpack -G DEB
       - name: Upload Artifact
